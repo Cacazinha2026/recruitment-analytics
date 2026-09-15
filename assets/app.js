@@ -54,16 +54,113 @@ function bars(container,items,title,subtitle){
  el.querySelectorAll("[data-tip]").forEach(n=>{n.onmousemove=e=>tooltip(n.dataset.tip,e.clientX,e.clientY);n.onmouseleave=hideTip})
 }
 function stacked(container,arr,key,results){
- const cats=group(arr,key).map(x=>x[0]); const el=$(container),W=900,H=250,L=55,R=15,T=15,B=45,pw=W-L-R,ph=H-T-B;
- const max=Math.max(...cats.map(c=>results.reduce((s,r)=>s+count(arr,key,c),0)),1);
- // For each category, compute counts per result.
- const totals=cats.map(c=>results.reduce((s,r)=>s+arr.filter(d=>d[key]===c&&d["Resultado"]===r).length,0));
- const maxT=Math.max(...totals,1), gap=pw/cats.length, bw=Math.min(80,gap*.62);
- let svg=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">`;
- cats.forEach((c,i)=>{let x=L+i*gap+(gap-bw)/2,y=H-B;results.forEach((r,j)=>{let n=count(arr,key,c);let seg=(n/maxT)*ph; if(n){y-=seg;svg+=`<rect x="${x}" y="${y}" width="${bw}" height="${seg}" fill="${COLORS[j%COLORS.length]}" data-tip="${esc(c)}<br>${esc(r)}: ${n} (${pct(n,totals[i])})"></rect>`}});svg+=`<text x="${x+bw/2}" y="${H-22}" text-anchor="middle" font-size="11" fill="#667085">${esc(c).slice(0,14)}</text>`});
- svg+=`<line x1="${L}" y1="${H-B}" x2="${W-R}" y2="${H-B}" stroke="#e7eaf0"/></svg>`;el.innerHTML=svg;
- el.querySelectorAll("[data-tip]").forEach(n=>{n.onmousemove=e=>tooltip(n.dataset.tip,e.clientX,e.clientY);n.onmouseleave=hideTip})
- $(container).parentElement.querySelector(".legend").innerHTML=results.map((r,i)=>`<span><i class="dot" style="background:${COLORS[i%COLORS.length]}"></i>${esc(r)}</span>`).join("");
+
+const cats=group(arr,key).map(x=>x[0]);
+
+const el=$(container),
+W=900,
+H=250,
+L=55,
+R=15,
+T=15,
+B=45,
+pw=W-L-R,
+ph=H-T-B;
+
+const totals=cats.map(c =>
+    results.reduce(
+        (s,r) =>
+            s + arr.filter(
+                d => d[key]===c && d["Resultado"]===r
+            ).length,
+        0
+    )
+);
+
+const maxT=Math.max(...totals,1);
+const gap=pw/cats.length;
+const bw=Math.min(80,gap*.62);
+
+let svg=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">`;
+
+cats.forEach((c,i)=>{
+
+    let x=L+i*gap+(gap-bw)/2;
+    let y=H-B;
+
+    results.forEach((r,j)=>{
+
+        const n=arr.filter(
+            d => d[key]===c && d["Resultado"]===r
+        ).length;
+
+        if(n){
+
+            const seg=(n/maxT)*ph;
+
+            y-=seg;
+
+            svg+=`
+                <rect
+                    x="${x}"
+                    y="${y}"
+                    width="${bw}"
+                    height="${seg}"
+                    fill="${COLORS[j%COLORS.length]}"
+                    data-tip="${esc(c)}<br>${esc(r)}: ${n} (${pct(n,totals[i])})">
+                </rect>
+            `;
+        }
+
+    });
+
+    svg+=`
+        <text
+            x="${x+bw/2}"
+            y="${H-22}"
+            text-anchor="middle"
+            font-size="11"
+            fill="#667085">
+            ${esc(c).slice(0,14)}
+        </text>
+    `;
+
+});
+
+svg+=`
+    <line
+        x1="${L}"
+        y1="${H-B}"
+        x2="${W-R}"
+        y2="${H-B}"
+        stroke="#e7eaf0"/>
+</svg>`;
+
+el.innerHTML=svg;
+
+el.querySelectorAll("[data-tip]").forEach(n=>{
+    n.onmousemove=e=>tooltip(
+        n.dataset.tip,
+        e.clientX,
+        e.clientY
+    );
+
+    n.onmouseleave=hideTip;
+});
+
+$(container)
+    .parentElement
+    .querySelector(".legend")
+    .innerHTML=results.map(
+        (r,i)=>
+            `<span>
+                <i class="dot"
+                   style="background:${COLORS[i%COLORS.length]}">
+                </i>
+                ${esc(r)}
+            </span>`
+    ).join("");
+
 }
 function lineChart(container,arr){
  const months=group(arr,"Mês da candidatura").map(x=>x[0]).sort(), W=900,H=250,L=55,R=25,T=20,B=45,pw=W-L-R,ph=H-T-B,max=Math.max(...months.map(m=>count(arr,"Mês da candidatura",m)),1);
