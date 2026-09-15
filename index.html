@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Recruitment Analytics — Carla Morais Aliste</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="app">
+<header class="topbar"><div class="topbar-inner">
+  <div class="brand">Carla Morais Aliste <span>· Recruitment Analytics</span></div>
+  <nav id="nav">
+    <button class="active" data-section="inicio">Início</button>
+    <button data-section="overview">Visão Geral</button>
+    <button data-section="gargalos">Gargalos</button>
+    <button data-section="dados">Dados</button>
+    <button data-section="sobre">Sobre</button>
+  </nav>
+</div></header>
+
+<section id="inicio" class="hero section active">
+  <div class="eyebrow">Data Analytics · Power BI · Data Storytelling</div>
+  <h1>Análise de Processos Seletivos</h1>
+  <p>Um projeto de <strong>Recruitment Analytics</strong> para transformar dados de processos seletivos em indicadores, padrões e insights acionáveis.</p>
+  <div class="actions">
+    <button class="btn primary" onclick="document.querySelector('[data-section=overview]').click()">Explorar dashboard</button>
+    <a class="btn" href="https://www.linkedin.com/in/carla-morais-aliste-962898195/" target="_blank" rel="noopener">LinkedIn ↗</a>
+  </div>
+</section>
+
+<main>
+<section id="overview" class="section">
+  <div class="section-head"><div><h2>Visão Geral</h2><p>Indicadores e evolução dos processos registrados na base.</p></div></div>
+  <div class="filters">
+    <div class="filter"><label>Área</label><select id="fArea"><option value="">Todas</option></select></div>
+    <div class="filter"><label>Resultado</label><select id="fResult"><option value="">Todos</option></select></div>
+    <div class="filter"><label>Modelo</label><select id="fModel"><option value="">Todos</option></select></div>
+    <div class="filter"><label>Canal</label><select id="fChannel"><option value="">Todos</option></select></div>
+    <div class="filter"><label>Faixa salarial</label><select id="fSalary"><option value="">Todas</option></select></div>
+    <div class="filter"><label>Mês</label><select id="fMonth"><option value="">Todos</option></select></div>
+    <div class="filter"><label>Buscar cargo</label><input id="fCargo" placeholder="Digite parte do cargo"></div>
+    <div class="filter actions-filter"><button id="clear" class="btn" style="width:100%;justify-content:center">Limpar filtros</button></div>
+  </div>
+  <div id="kpis" class="grid-kpi"></div>
+  <div id="conversions" class="conversions"></div>
+  <div class="chart-grid">
+    <div class="card chart-card"><div class="chart-title">Etapas alcançadas nos processos</div><div class="chart-sub">Ocorrências por etapa; não representa conversão sequencial obrigatória.</div><div id="cStages" class="chart"></div></div>
+    <div class="card chart-card"><div class="chart-title">Resultado por Área</div><div class="chart-sub">Distribuição dos resultados dentro de cada área.</div><div id="cArea" class="chart"></div><div class="legend"></div></div>
+    <div class="card chart-card"><div class="chart-title">Resultado por Modelo de Trabalho</div><div class="chart-sub">Comparação entre os modelos registrados.</div><div id="cModel" class="chart"></div><div class="legend"></div></div>
+    <div class="card chart-card"><div class="chart-title">Evolução das Candidaturas</div><div class="chart-sub">Quantidade de processos por mês.</div><div id="cMonth" class="chart"></div></div>
+  </div>
+</section>
+
+<section id="gargalos" class="section">
+  <div class="section-head"><div><h2>Análise dos Gargalos</h2><p>Onde os processos concentram perdas, esperas e restrições.</p></div></div>
+  <div class="chart-grid">
+    <div class="card chart-card"><div class="chart-title">Motivos dos Resultados</div><div class="chart-sub">Categorias agrupadas para facilitar a leitura.</div><div id="cMotives" class="chart"></div></div>
+    <div class="card chart-card"><div class="chart-title">Resultado por Canal de Candidatura</div><div class="chart-sub">Distribuição por origem da oportunidade.</div><div id="cChannel" class="chart"></div><div class="legend"></div></div>
+    <div class="card chart-card"><div class="chart-title">Resultado por Faixa Salarial</div><div class="chart-sub">Comparação por faixa, sem expor valores exatos.</div><div id="cSalary" class="chart"></div><div class="legend"></div></div>
+    <div class="card chart-card"><div class="chart-title">Resultado por Etapa Máxima</div><div class="chart-sub">Última etapa registrada em cada processo.</div><div id="cStageMax" class="chart"></div><div class="legend"></div></div>
+  </div>
+  <div id="insights" class="insights"></div>
+  <div id="conclusion" class="card conclusion"></div>
+</section>
+
+<section id="dados" class="section">
+  <div class="section-head"><div><h2>Dados</h2><p>Visualização da base pública anonimizada e filtrada.</p></div><div><span id="rowCount"></span> · <button id="csv" class="btn">Exportar CSV</button></div></div>
+  <div class="card table-wrap"><table class="data-table"><thead><tr>
+    <th>Empresa</th><th>Cargo</th><th>Mês</th><th>Canal</th><th>Área</th><th>Faixa</th><th>Modelo</th><th>RH</th><th>Gestor</th><th>Entrevistas</th><th>Etapa</th><th>Resultado</th><th>Motivo</th><th>Feedback</th>
+  </tr></thead><tbody id="rows"></tbody></table></div>
+</section>
+
+<section id="sobre" class="section">
+  <div class="section-head"><div><h2>Sobre o projeto</h2><p>Metodologia, tecnologia e cuidados com os dados.</p></div></div>
+  <div class="about">
+    <div class="card"><h3>Objetivo</h3><p>Transformar uma base de processos seletivos em uma análise estruturada de volume, etapas, resultados, canais, faixas salariais e gargalos.</p><h3>Tratamento</h3><p>A versão pública utiliza dados anonimizados/adaptados: datas foram reduzidas ao mês, salários foram convertidos em faixas, cargos foram generalizados e observações pessoais foram removidas.</p><h3>Modelagem</h3><p>O projeto original foi desenvolvido em Power BI com Power Query, DAX, calendário e dimensões auxiliares. Esta página é uma reprodução web interativa para apresentação do portfólio.</p></div>
+    <div class="card"><h3>Principais indicadores</h3><ul><li>Total de processos</li><li>Processos com entrevista</li><li>Chegada ao gestor</li><li>Testes ou cases</li><li>Aprovação e reprovação</li><li>Processos aguardando retorno</li><li>Distribuição por canal, área e modelo</li></ul><h3>Privacidade</h3><p>Os dados publicados não têm como objetivo identificar empresas ou expor informações privadas de processos seletivos.</p><a class="btn primary" href="https://www.linkedin.com/in/carla-morais-aliste-962898195/" target="_blank" rel="noopener">Ver LinkedIn</a></div>
+  </div>
+</section>
+</main>
+<footer>Recruitment Analytics · Carla Morais Aliste · <span id="year"></span><br>Base pública anonimizada para fins de demonstração e portfólio.</footer>
+<div id="tip" class="tip"></div>
+</div>
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
