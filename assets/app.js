@@ -170,9 +170,37 @@ function renderCharts(){
  const d=filtered(), results=[...new Set(DATA.map(x=>x["Resultado"]).filter(Boolean))];
  bars("#cStages",[["Candidaturas",d.length],["Entrevistas",d.filter(x=>+x["Nº de entrevistas"]>0).length],["Gestor",count(d,"Entrevista gestor","Sim")],["Teste/Case",d.filter(x=>["Teste","Teste prático","Teste/Case"].includes(x["Etapa máxima"])).length],["Aprovações",count(d,"Resultado","Aprovada")]],"","");
  stacked("#cArea",d,"Área",results); stacked("#cModel",d,"Modelo",results); lineChart("#cMonth",d);
- bars("#cMotives",group(d,"Categoria do motivo"),"","");
+ const motivosAgrupados = {};
+
+d.forEach(x => {
+
+  let motivo = x["Categoria do motivo"];
+
+  if(motivo === "Case realizado - sem retorno"){
+    motivo = "Sem retorno";
+  }
+
+  motivosAgrupados[motivo] =
+    (motivosAgrupados[motivo] || 0) + 1;
+
+});
+
+bars(
+  "#cMotives",
+  Object.entries(motivosAgrupados)
+    .sort((a,b)=>b[1]-a[1]),
+  "",
+  ""
+);
  stacked("#cChannel",d,"Onde encontrou",results); stacked("#cSalary",d,"Salário",results); stacked("#cStageMax",d,"Etapa máxima",results);
- const noReturn=count(d,"Categoria do motivo","Sem retorno"), bi=count(d,"Área","BI"), li=count(d,"Onde encontrou","LinkedIn");
+ const noReturn =
+  d.filter(x =>
+    ["Sem retorno","Case realizado - sem retorno"]
+      .includes(x["Categoria do motivo"])
+  ).length;
+
+const bi=count(d,"Área","BI");
+const li=count(d,"Onde encontrou","LinkedIn");
  $("#insights").innerHTML=[
   ["Sem retorno",`${noReturn} processo(s)`],["Área BI",`${bi} processo(s)`],["LinkedIn",`${li} processo(s)`]
  ].map(x=>`<div class="card insight"><div class="small">${x[0]}</div><div class="big">${x[1]}</div></div>`).join("");
