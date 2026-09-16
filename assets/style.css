@@ -55,3 +55,36 @@ footer{max-width:1320px;margin:auto;padding:30px 24px 50px;color:var(--muted);fo
 @media(max-width:1050px){.grid-kpi{grid-template-columns:repeat(4,1fr)}.filters{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:760px){.topbar-inner{align-items:flex-start;flex-direction:column}.hero{padding-top:38px}.filters,.chart-grid,.about{grid-template-columns:1fr}.grid-kpi{grid-template-columns:repeat(2,1fr)}.conversions,.insights{grid-template-columns:1fr 1fr}.chart-card{min-height:310px}}
 @media(max-width:480px){main,.hero{padding-left:14px;padding-right:14px}.grid-kpi{grid-template-columns:1fr 1fr}.conversions,.insights{grid-template-columns:1fr}.hero h1{font-size:36px}}
+.status{
+  display:inline-block;
+  padding:5px 10px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:700;
+  line-height:1;
+}
+
+.status-aguardando{
+  background:#fef3c7;
+  color:#92400e;
+}
+
+.status-reprovada{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.status-aprovada{
+  background:#dcfce7;
+  color:#166534;
+}
+
+.status-congelado{
+  background:#e5e7eb;
+  color:#374151;
+}
+
+.status-default{
+  background:#eef2f7;
+  color:#475467;
+}
