@@ -1,5 +1,9 @@
 
-const DATA = window.RECRUITMENT_DATA || [];
+const DATA = (window.RECRUITMENT_DATA || []).map(d => ({
+  ...d,
+  "Cargo": d["Cargo"] ?? d["Cargo (generalizado)"],
+  "Salário": d["Salário"] ?? d["Faixa Salarial"]
+}));
 const COLORS = ["#2563eb","#7c3aed","#0f766e","#d97706","#dc2626","#475467","#0891b2","#16a34a"];
 
 const $ = s => document.querySelector(s);
@@ -55,111 +59,104 @@ function bars(container,items,title,subtitle){
 }
 function stacked(container,arr,key,results){
 
-const cats=group(arr,key).map(x=>x[0]);
+  const cats = group(arr,key).map(x=>x[0]);
+  const el = $(container);
 
-const el=$(container),
-W=900,
-H=250,
-L=55,
-R=15,
-T=15,
-B=45,
-pw=W-L-R,
-ph=H-T-B;
+  const W=900,H=250,L=55,R=15,T=15,B=45;
+  const pw=W-L-R;
+  const ph=H-T-B;
 
-const totals=cats.map(c =>
-    results.reduce(
-        (s,r) =>
-            s + arr.filter(
-                d => d[key]===c && d["Resultado"]===r
-            ).length,
-        0
-    )
-);
+  const totals = cats.map(c =>
+    results.reduce((sum,r) =>
+      sum + arr.filter(d =>
+        d[key]===c &&
+        d["Resultado"]===r
+      ).length
+    ,0)
+  );
 
-const maxT=Math.max(...totals,1);
-const gap=pw/cats.length;
-const bw=Math.min(80,gap*.62);
+  const maxT=Math.max(...totals,1);
+  const gap=pw/cats.length;
+  const bw=Math.min(80,gap*.62);
 
-let svg=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">`;
+  let svg=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">`;
 
-cats.forEach((c,i)=>{
+  cats.forEach((c,i)=>{
 
     let x=L+i*gap+(gap-bw)/2;
     let y=H-B;
 
     results.forEach((r,j)=>{
 
-        const n=arr.filter(
-            d => d[key]===c && d["Resultado"]===r
-        ).length;
+      const n=arr.filter(d =>
+        d[key]===c &&
+        d["Resultado"]===r
+      ).length;
 
-        if(n){
+      if(n>0){
 
-            const seg=(n/maxT)*ph;
+        const seg=(n/maxT)*ph;
 
-            y-=seg;
+        y-=seg;
 
-            svg+=`
-                <rect
-                    x="${x}"
-                    y="${y}"
-                    width="${bw}"
-                    height="${seg}"
-                    fill="${COLORS[j%COLORS.length]}"
-                    data-tip="${esc(c)}<br>${esc(r)}: ${n} (${pct(n,totals[i])})">
-                </rect>
-            `;
-        }
+        svg+=`
+          <rect
+            x="${x}"
+            y="${y}"
+            width="${bw}"
+            height="${seg}"
+            rx="3"
+            fill="${COLORS[j%COLORS.length]}"
+            data-tip="${esc(c)}<br>${esc(r)}: ${n} (${pct(n,totals[i])})">
+          </rect>
+        `;
+      }
 
     });
 
     svg+=`
-        <text
-            x="${x+bw/2}"
-            y="${H-22}"
-            text-anchor="middle"
-            font-size="11"
-            fill="#667085">
-            ${esc(c).slice(0,14)}
-        </text>
+      <text
+        x="${x+bw/2}"
+        y="${H-22}"
+        text-anchor="middle"
+        font-size="11"
+        fill="#667085">
+        ${esc(c).slice(0,16)}
+      </text>
     `;
 
-});
+  });
 
-svg+=`
+  svg+=`
     <line
-        x1="${L}"
-        y1="${H-B}"
-        x2="${W-R}"
-        y2="${H-B}"
-        stroke="#e7eaf0"/>
-</svg>`;
+      x1="${L}"
+      y1="${H-B}"
+      x2="${W-R}"
+      y2="${H-B}"
+      stroke="#e7eaf0"/>
+  </svg>`;
 
-el.innerHTML=svg;
+  el.innerHTML=svg;
 
-el.querySelectorAll("[data-tip]").forEach(n=>{
-    n.onmousemove=e=>tooltip(
-        n.dataset.tip,
-        e.clientX,
-        e.clientY
-    );
+  el.querySelectorAll("[data-tip]").forEach(n=>{
+    n.onmousemove=e =>
+      tooltip(n.dataset.tip,e.clientX,e.clientY);
 
     n.onmouseleave=hideTip;
-});
+  });
 
-$(container)
-    .parentElement
-    .querySelector(".legend")
-    .innerHTML=results.map(
-        (r,i)=>
-            `<span>
-                <i class="dot"
-                   style="background:${COLORS[i%COLORS.length]}">
-                </i>
-                ${esc(r)}
-            </span>`
-    ).join("");
+  const legend =
+    $(container).parentElement.querySelector(".legend");
+
+  if(legend){
+    legend.innerHTML=results.map((r,i)=>`
+      <span>
+        <i class="dot"
+           style="background:${COLORS[i%COLORS.length]}"></i>
+        ${esc(r)}
+      </span>
+    `).join("");
+  }
 
 }
 function lineChart(container,arr){
@@ -182,9 +179,66 @@ function renderCharts(){
  $("#conclusion").innerHTML=`<div class="tag">PRINCIPAL GARGALO</div><p>${noReturn} dos ${d.length} processos (${pct(noReturn,d.length)}) estão classificados como sem retorno das empresas.</p>`;
 }
 function renderTable(){
- const d=filtered(), cols=["Empresa","Cargo","Mês da candidatura","Onde encontrou","Área","Salário","Modelo","Entrevista RH","Entrevista gestor","Nº de entrevistas","Etapa máxima","Resultado","Categoria do motivo","Feedback recebido"];
- $("#rows").innerHTML=d.map(r=>`<tr>${cols.map(c=>`<td>${esc(r[c])}</td>`).join("")}</tr>`).join("");
- $("#rowCount").textContent=`${d.length} registro(s)`;
+
+  const d=filtered();
+
+  const cols=[
+    "Empresa",
+    "Cargo",
+    "Mês da candidatura",
+    "Onde encontrou",
+    "Área",
+    "Salário",
+    "Modelo",
+    "Entrevista RH",
+    "Entrevista gestor",
+    "Nº de entrevistas",
+    "Etapa máxima",
+    "Resultado",
+    "Categoria do motivo",
+    "Feedback recebido"
+  ];
+
+  const statusClass = {
+    "Aguardando":"status-aguardando",
+    "Reprovada":"status-reprovada",
+    "Aprovada":"status-aprovada",
+    "Congelado":"status-congelado"
+  };
+
+  $("#rows").innerHTML=d.map(r=>`
+
+    <tr>
+
+      ${cols.map(c=>{
+
+        const value = r[c] ?? "";
+
+        if(c==="Resultado"){
+
+          const cls =
+            statusClass[value] || "status-default";
+
+          return `
+            <td>
+              <span class="status ${cls}">
+                ${esc(value)}
+              </span>
+            </td>
+          `;
+        }
+
+        return `<td>${esc(value)}</td>`;
+
+      }).join("")}
+
+    </tr>
+
+  `).join("");
+
+  $("#rowCount").textContent=
+    `${d.length} registro(s)`;
+
 }
 function renderAll(){renderKPIs();renderCharts();renderTable()}
 function csv(){
