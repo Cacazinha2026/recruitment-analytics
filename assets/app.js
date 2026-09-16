@@ -192,7 +192,7 @@ bars(
   "",
   ""
 );
- stacked("#cChannel",d,"Onde encontrou",results); stacked("#cSalary",d,"Salário",results); stacked("#cStageMax",d,"Etapa máxima",results);
+ stacked("#cChannel",d,"Onde encontrou",results); stacked("#cSalary",d,"Faixa Salarial",results); stacked("#cStageMax",d,"Etapa máxima",results);
  const noReturn =
   d.filter(x =>
     ["Sem retorno","Case realizado - sem retorno"]
